@@ -15,18 +15,27 @@ class Book {
 }
 
 function addBookToDOM(book) {
-  let post = `
+  let post = document.createElement("div")
+  post.id = `${book.title}`
+  post.className = "card"
+  post.innerHTML = `
+    <img src=${book.thumbnail} alt=${book.title}>
     <section>
-        <h3>${book.title}</h3>
+    <h3>${book.title}</h3>
+    <p>${book.description}</p>
+    <p>${book.extract}</p>
+    <button class="readButton">Mark As Read</button>
+    <button class="removeButton">Remove</button>
     </section>
-    `
+  `
+  main.appendChild(post)
 }
 
 function fetchBookData(bookTitle) {
   fetch(wikiAPI + bookTitle)
     .then(response => response.json())
     .then(data => new Book(data))
-    .then(book => console.log(book))
+    .then(book => addBookToDOM(book))
 }
 
 fetchBookData("The Lord of the Rings")
@@ -39,4 +48,12 @@ form.addEventListener("submit", event => {
     fetchBookData(value)
   }
   event.preventDefault()
+})
+
+main.addEventListener("click", event => {
+  if (event.target.className === "removeButton") {
+    event.target.parentNode.parentNode.remove()
+  } else if (event.target.className === "readButton") {
+    event.target.parentNode.classList.toggle("read")
+  }
 })
