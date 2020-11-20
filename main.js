@@ -2,12 +2,13 @@ const wikiAPI = "https://en.wikipedia.org/api/rest_v1/page/summary/"
 const main = document.getElementById("main")
 const input = document.querySelector("input")
 const form = document.querySelector("form")
+const datalist = document.getElementById("bookSearch")
 let myLibrary = []
 
 class Book {
   constructor(data) {
     this.title = data.title
-    this.description = data.description
+    this.description = data.description || "No description available"
     this.extract = data.extract
     this.thumbnail = data.thumbnail.source
     myLibrary.push(this)
@@ -15,45 +16,95 @@ class Book {
 }
 
 function addBookToDOM(book) {
-  let post = document.createElement("div")
-  post.id = `${book.title}`
-  post.className = "card"
-  post.innerHTML = `
-    <img src=${book.thumbnail} alt=${book.title}>
-    <section>
-    <h3>${book.title}</h3>
-    <p>${book.description}</p>
-    <p>${book.extract}</p>
-    <button class="readButton">Mark As Read</button>
-    <button class="removeButton">Remove</button>
-    </section>
-  `
-  main.appendChild(post)
+  let card = document.createElement("section")
+  card.id = `${book.title}`
+  card.className = "card"
+  card.style.backgroundImage = `url(${book.thumbnail})`
+  card.innerHTML = `
+  <section class="content">
+  <h2>${book.title}</h2>
+  <p>${book.description}</p>
+  <p>${book.extract}</p>
+  <button class="readButton">Mark As Read</button>
+  <button class="removeButton">Remove</button>
+  </section>
+ `
+  main.appendChild(card)
 }
 
-function fetchBookData(bookTitle) {
+function createAndPostCard(bookTitle) {
   fetch(wikiAPI + bookTitle)
-    .then(response => response.json())
-    .then(data => new Book(data))
-    .then(book => addBookToDOM(book))
+    .then(checkStatus)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data)
+      return new Book(data)
+    })
+    .then(addBookToDOM)
+    .catch((error) =>
+      console.log(
+        "It looks like there was a problem!",
+        console.error(error.message)
+      )
+    )
 }
 
-fetchBookData("The Lord of the Rings")
-fetchBookData("the count of monte cristo")
-fetchBookData("iliad")
+function checkStatus(response) {
+  if (response.ok) {
+    return Promise.resolve(response)
+  } else {
+    return Promise.reject(
+      new Error("Must use exact name of title when searching")
+    )
+  }
+}
 
-form.addEventListener("submit", event => {
+createAndPostCard("The Lord of the Rings")
+createAndPostCard("the count of monte cristo")
+createAndPostCard("iliad")
+
+form.addEventListener("submit", (event) => {
   let value = input.value
   if (value) {
-    fetchBookData(value)
+    createAndPostCard(value)
   }
+  input.value = ""
   event.preventDefault()
 })
 
-main.addEventListener("click", event => {
+main.addEventListener("click", (event) => {
   if (event.target.className === "removeButton") {
     event.target.parentNode.parentNode.remove()
   } else if (event.target.className === "readButton") {
-    event.target.parentNode.classList.toggle("read")
+    event.target.parentNode.parentNode.classList.toggle("read")
   }
 })
+
+input.addEventListener("keyup", (e) => {
+  if (input.value) {
+    let search = input.value.replace(" ", "%20")
+    fetch(
+      `https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=opensearch&format=json&namespace=0&limit=10&search=${search}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        return data[1].reduce((list, datum) => {
+          return list + `<option>${datum}</option>`
+        }, "")
+        return
+      })
+      // .then((list) => console.log(list))
+      .then((list) => (datalist.innerHTML = list))
+  }
+})
+
+// bookDisplay.addEventListener("click", event => {
+//   if (event.target.className === "changeStatusBtn") {
+//     let wasRead = event.target.parentNode.querySelector(".bookRead").textContent
+//     if (wasRead === "read") {
+//       wasRead = "not read"
+//     } else {
+//       wasRead = "read"
+//     }
+//   }
+// })
