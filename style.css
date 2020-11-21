@@ -79,7 +79,7 @@ body {
   transform: scale(1.2);
 }
 
-.content {
+.cardDisplay {
   background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
   border-radius: 40px;
   background-size: contain;
@@ -90,13 +90,14 @@ body {
   height: 100%;
   z-index: 2;
 }
+section.cardDisplay:hover {
+  opacity: 1;
+}
 
 .read {
   border: 8px solid rgba(123, 221, 24, 0.961);
 }
-section.content:hover {
-  opacity: 1;
-}
+
 h2 {
   height: 15%;
   text-align: center;

@@ -10,7 +10,7 @@ class Book {
     this.title = data.title
     this.description = data.description || "No description available"
     this.extract = data.extract
-    this.thumbnail = data.thumbnail.source
+    this.thumbnail = data.thumbnail?.source
     myLibrary.push(this)
   }
 }
@@ -21,7 +21,7 @@ function addBookToDOM(book) {
   card.className = "card"
   card.style.backgroundImage = `url(${book.thumbnail})`
   card.innerHTML = `
-  <section class="content">
+  <section class="cardDisplay">
   <h2>${book.title}</h2>
   <p>${book.description}</p>
   <p>${book.extract}</p>
@@ -59,6 +59,30 @@ function checkStatus(response) {
   }
 }
 
+function populateSearchBar() {
+  let controller = new AbortController()
+  let search = input.value.replace(" ", "%20")
+  const options = document.getElementsByTagName("option")
+  // controller.signal.addEventListener("abort", () => controller.abort())
+  input.addEventListener("keydown", () => controller.abort())
+  fetch(
+    `https://en.wikipedia.org/w/api.php?action=opensearch&format=json&namespace=0&limit=5&search=${search}&origin=*`,
+    { signal: controller.signal }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      return data[1].forEach((title, i) => {
+        options[i].value = title
+      })
+    })
+    // .then((list) => (datalist.innerHTML = list))
+    .catch((err) => {
+      err.name === "AbortError"
+        ? console.error("fetch aborted: " + err.message)
+        : console.error(err.message)
+    })
+}
+
 createAndPostCard("The Lord of the Rings")
 createAndPostCard("the count of monte cristo")
 createAndPostCard("iliad")
@@ -82,26 +106,8 @@ main.addEventListener("click", (event) => {
 
 input.addEventListener("keyup", (e) => {
   if (input.value) {
-    let controller = new AbortController()
-    let search = input.value.replace(" ", "%20")
-    const options = document.getElementsByTagName("option")
-    // controller.signal.addEventListener("abort", () => controller.abort())
-    input.addEventListener("keydown", () => controller.abort())
-    fetch(
-      `https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=opensearch&format=json&namespace=0&limit=5&search=${search}`,
-      { signal: controller.signal }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        return data[1].forEach((title, i) => {
-          options[i].value = title
-        })
-      })
-      // .then((list) => (datalist.innerHTML = list))
-      .catch((err) => {
-        err.name === "AbortError"
-          ? console.error("fetch aborted: " + err.message)
-          : console.error(err.message)
-      })
+    populateSearchBar(input.value)
+  } else {
+    options.forEach((option) => (option.value = ""))
   }
 })
