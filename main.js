@@ -22,11 +22,15 @@ function addBookToDOM(book) {
   card.style.backgroundImage = `url(${book.thumbnail})`
   card.innerHTML = `
   <section class="cardDisplay">
-  <h2>${book.title}</h2>
-  <p>${book.description}</p>
-  <p>${book.extract}</p>
-  <button class="readButton">Mark As Read</button>
-  <button class="removeButton">Remove</button>
+    <section class="content">
+      <h2>${book.title}</h2>
+      <p>${book.description}</p>
+      <p>${book.extract}</p>
+    </section>
+    <section class="cardButtons">
+      <button id="readButton">Mark as Read</button>
+      <button id="removeButton">Remove</button>
+    </section>
   </section>
  `
   main.appendChild(card)
@@ -93,14 +97,20 @@ form.addEventListener("submit", (event) => {
     createAndPostCard(value)
   }
   input.value = ""
+  // options.forEach((option) => (option.value = ``))
   event.preventDefault()
 })
 
 main.addEventListener("click", (event) => {
-  if (event.target.className === "removeButton") {
+  if (event.target.id === "removeButton") {
     event.target.parentNode.parentNode.remove()
-  } else if (event.target.className === "readButton") {
-    event.target.parentNode.parentNode.classList.toggle("read")
+  } else if (event.target.id === "readButton") {
+    event.target.parentNode.parentNode.parentNode.classList.toggle("read")
+    Array.from(
+      event.target.parentNode.parentNode.parentNode.classList
+    ).includes("read")
+      ? (event.target.textContent = "Mark as Unread")
+      : (event.target.textContent = "Mark as Read")
   }
 })
 

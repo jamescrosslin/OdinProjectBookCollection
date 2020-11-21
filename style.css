@@ -4,21 +4,21 @@
 }
 /* The emerging W3C standard
    that is currently Firefox-only */
-p {
+section {
   scrollbar-width: thin;
   scrollbar-color: beige;
 }
 
 /* Works on Chrome/Edge/Safari */
-p::-webkit-scrollbar {
+section::-webkit-scrollbar {
   width: 6px;
 }
-p::-webkit-scrollbar-thumb {
+section::-webkit-scrollbar-thumb {
   background-color: darkgray;
   border-radius: 20px;
   /* border: 3px solid beige; */
 }
-p::-webkit-scrollbar-corner {
+section::-webkit-scrollbar-corner {
   opacity: 0;
 }
 
@@ -93,36 +93,43 @@ body {
 section.cardDisplay:hover {
   opacity: 1;
 }
+.content {
+  width: 100%;
+  height: 90%;
+  overflow: scroll;
+}
 
 .read {
   border: 8px solid rgba(123, 221, 24, 0.961);
 }
 
 h2 {
-  height: 15%;
   text-align: center;
   font-size: 2.3em;
   font-weight: 600;
   line-height: 1em;
-  margin-block-start: 1em;
-  margin-block-end: 0;
+  padding: 1em 0;
 }
 h2 + p {
   font-size: 0.9em;
-  height: 8%;
+  padding: 0.2em 0;
 }
 
 p + p {
   font-weight: 400;
   font-size: 1.1em;
-  height: 50%;
-  overflow: scroll;
+  padding: 0.3em 0;
 }
+
+section.cardButtons {
+  width: 100%;
+  height: 10%;
+  display: flex;
+  justify-content: space-around;
+}
+
 section button {
-  height: 8%;
-  align-self: center;
-  min-width: 20%;
-  margin-left: 10%;
+  height: 2em;
 }
 
 /* Style the footer */
