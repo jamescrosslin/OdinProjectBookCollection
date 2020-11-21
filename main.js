@@ -82,19 +82,27 @@ main.addEventListener("click", (event) => {
 
 input.addEventListener("keyup", (e) => {
   if (input.value) {
+    let controller = new AbortController()
     let search = input.value.replace(" ", "%20")
+    const options = document.getElementsByTagName("option")
+    // controller.signal.addEventListener("abort", () => controller.abort())
+    input.addEventListener("keydown", () => controller.abort())
     fetch(
-      `https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=opensearch&format=json&namespace=0&limit=10&search=${search}`
+      `https://en.wikipedia.org/w/api.php?action=opensearch&format=json&namespace=0&limit=5&search=${search}`,
+      { signal: controller.signal }
     )
       .then((response) => response.json())
       .then((data) => {
-        return data[1].reduce((list, datum) => {
-          return list + `<option>${datum}</option>`
-        }, "")
-        return
+        return data[1].forEach((title, i) => {
+          options[i].value = title
+        })
       })
-      // .then((list) => console.log(list))
-      .then((list) => (datalist.innerHTML = list))
+      // .then((list) => (datalist.innerHTML = list))
+      .catch((err) => {
+        err.name === "AbortError"
+          ? console.error("fetch aborted: " + err.message)
+          : console.error(err.message)
+      })
   }
 })
 
