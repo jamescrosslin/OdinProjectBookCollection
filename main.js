@@ -88,7 +88,7 @@ input.addEventListener("keyup", (e) => {
     // controller.signal.addEventListener("abort", () => controller.abort())
     input.addEventListener("keydown", () => controller.abort())
     fetch(
-      `https://en.wikipedia.org/w/api.php?action=opensearch&format=json&namespace=0&limit=5&search=${search}`,
+      `https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=opensearch&format=json&namespace=0&limit=5&search=${search}`,
       { signal: controller.signal }
     )
       .then((response) => response.json())
@@ -105,14 +105,3 @@ input.addEventListener("keyup", (e) => {
       })
   }
 })
-
-// bookDisplay.addEventListener("click", event => {
-//   if (event.target.className === "changeStatusBtn") {
-//     let wasRead = event.target.parentNode.querySelector(".bookRead").textContent
-//     if (wasRead === "read") {
-//       wasRead = "not read"
-//     } else {
-//       wasRead = "read"
-//     }
-//   }
-// })
