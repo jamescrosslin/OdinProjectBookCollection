@@ -8,7 +8,7 @@ let myLibrary = []
 class Book {
   constructor(data) {
     this.title = data.title
-    this.description = data.description || "No description available"
+    this.description = data.description || "No tag line available"
     this.extract = data.extract
     this.thumbnail = data.thumbnail?.source
     myLibrary.push(this)
@@ -103,7 +103,7 @@ form.addEventListener("submit", (event) => {
 
 main.addEventListener("click", (event) => {
   if (event.target.id === "removeButton") {
-    event.target.parentNode.parentNode.remove()
+    event.target.parentNode.parentNode.parentNode.remove()
   } else if (event.target.id === "readButton") {
     event.target.parentNode.parentNode.parentNode.classList.toggle("read")
     Array.from(
